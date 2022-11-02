@@ -17,8 +17,10 @@ builder.Services.AddDbContext<JungleDbContext>(options =>
 
 
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<JungleDbContext>().AddDefaultUI();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(/*options => options.SignIn.RequireConfirmedAccount = true*/) 
+    .AddEntityFrameworkStores<JungleDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 5;
@@ -28,7 +30,7 @@ builder.Services.Configure<IdentityOptions>(opt =>
 });
 
 
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddRazorPages();
 var app = builder.Build();
@@ -47,6 +49,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication(); ;
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ namespace Jungle_Web.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; set; } //= "/Admin";
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
@@ -48,7 +49,6 @@ namespace Jungle_Web.Areas.Identity.Pages.Account
         {
 
             [Required]
-            [EmailAddress]
             [Display(Name = "Nom")]
             public string Name { get; set; }
 
@@ -75,9 +75,11 @@ namespace Jungle_Web.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
+
+           // returnUrl ??= Url.Action("Index", "Home", new { Area = "Admin" });
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
@@ -113,6 +115,8 @@ namespace Jungle_Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
+            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
 
             // If we got this far, something failed, redisplay form
             return Page();
